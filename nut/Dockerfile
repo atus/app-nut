@@ -32,6 +32,7 @@ RUN \
 # Use kernel hotplug events: host udev broadcasts do not reach bridge networking.
 # Keep this in /usr/local so distro dependencies cannot overwrite it.
 # Run upstream tests except stress_mt, which requires attached USB devices (#1373).
+# The netlink backend needs a nonempty usbfs root; provide an empty bus for CI.
 # hadolint ignore=DL3003
 RUN \
     mkdir -p /app /build/libusb \
@@ -44,7 +45,9 @@ RUN \
     && ./configure --prefix=/usr/local --libdir=/usr/local/lib \
         --disable-udev --disable-static --enable-tests-build \
     && make \
+    && mkdir -p /dev/bus/usb/001 \
     && make check TESTS="stress set_option init_context" VERBOSE=1 \
+    && rmdir /dev/bus/usb/001 \
     && make install \
     && make DESTDIR=/app install \
     && ldconfig
