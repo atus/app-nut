@@ -68,6 +68,7 @@ RUN \
         && patch -p1 --batch --forward -i "${nut_patch}"; \
     done \
     && PKG_CONFIG_PATH=/usr/local/lib/pkgconfig \
+        LDFLAGS="-Wl,-rpath,/usr/local/lib" \
         ./configure --prefix=/usr --datadir=/usr/share/nut --sysconfdir=/etc/nut --with-drvpath=/usr/libexec/nut \
         --with-usb --with-modbus --with-snmp --with-ssl \
     && make \
@@ -93,7 +94,7 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Prefer the kernel-backend library, including over usbutils' Debian dependency.
+# Verify NUT's runpath wins over usbutils' Debian dependency on both architectures.
 RUN \
     ldconfig \
     && case "$(ldd /usr/libexec/nut/usbhid-ups)" in \
