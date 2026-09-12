@@ -44,7 +44,7 @@ RUN \
     && ./configure --prefix=/usr/local --libdir=/usr/local/lib \
         --disable-udev --disable-static --enable-tests-build \
     && make \
-    && make check TESTS="stress set_option init_context" \
+    && make check TESTS="stress set_option init_context" VERBOSE=1 \
     && make install \
     && make DESTDIR=/app install \
     && ldconfig
